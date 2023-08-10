@@ -3,6 +3,9 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import { IconButton, Stack, Tooltip } from '@mui/material';
 
+import ActionList from 'components/atoms/actionsList';
+
+import { IAction } from 'state/action';
 import { IMessage } from 'state/chat';
 import { playgroundState } from 'state/playground';
 import { projectSettingsState } from 'state/project';
@@ -11,11 +14,19 @@ import FeedbackButtons from './feedbackButtons';
 
 interface Props {
   message: IMessage;
+  actions: IAction[];
 }
 
-export default function Buttons({ message }: Props) {
+export default function Buttons({ message, actions }: Props) {
   const projectSettings = useRecoilValue(projectSettingsState);
   const setPlayground = useSetRecoilState(playgroundState);
+
+  const scopedActions = actions.filter((a) => {
+    if (a.forId) {
+      return a.forId === message.id;
+    }
+    return true;
+  });
 
   const showEditButton = !!message.prompt && !!message.content;
 
@@ -50,6 +61,7 @@ export default function Buttons({ message }: Props) {
     <Stack direction="row" spacing={1}>
       {editButton}
       {showFeedbackButtons && <FeedbackButtons message={message} />}
+      {scopedActions.length ? <ActionList actions={scopedActions} /> : null}
     </Stack>
   );
 }
