@@ -89,9 +89,8 @@ function App() {
   const { isAuthenticated, getAccessTokenSilently, logout } = useAuth();
   const theme = makeTheme(themeVariant);
 
-  useEffect(() => {
-    document.body.style.backgroundColor = theme.palette.background.default;
-  }, [theme]);
+  // TODO Change background properly
+  document.body.style.backgroundColor = theme.palette.background.default;
 
   useEffect(() => {
     if (isAuthenticated && accessToken === undefined) {

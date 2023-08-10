@@ -1,6 +1,6 @@
 import { keyframes } from '@emotion/react';
-import { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useState } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { Box, Stack } from '@mui/material';
 
@@ -50,13 +50,13 @@ const Message = ({
   isRunning,
   isLast
 }: Props) => {
-  const appSettings = useRecoilValue(settingsState);
+  const [appSettings, setAppSettings] = useRecoilState(settingsState);
   const highlightedMessage = useRecoilValue(highlightMessage);
   const [showDetails, setShowDetails] = useState(appSettings.expandAll);
 
-  useEffect(() => {
+  if (appSettings.expandAll && !showDetails) {
     setShowDetails(appSettings.expandAll);
-  }, [appSettings.expandAll]);
+  }
 
   if (appSettings.hideCot && indent) {
     return null;
@@ -113,7 +113,13 @@ const Message = ({
             <DetailsButton
               message={message}
               opened={showDetails}
-              onClick={() => setShowDetails(!showDetails)}
+              onClick={() => {
+                setShowDetails(!showDetails);
+                setAppSettings((old) => ({
+                  ...old,
+                  expandAll: false
+                }));
+              }}
               loading={isRunning}
             />
             {!isRunning && isLast && message.waitForAnswer && <UploadButton />}

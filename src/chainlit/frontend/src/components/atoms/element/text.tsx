@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -17,9 +17,9 @@ export default function TextElement({ element }: Props) {
   const [error, setError] = useState(false);
   const [text, setText] = useState('');
 
-  useEffect(() => {
-    if (fetching || !element.url) return;
+  if (element.url && !fetching) {
     setFetching(true);
+
     fetch(element.url)
       .then((res) => res.text())
       .then((_text) => {
@@ -32,7 +32,7 @@ export default function TextElement({ element }: Props) {
         setError(true);
         setFetching(false);
       });
-  }, [element]);
+  }
 
   let content = fetching
     ? 'Loading...'
